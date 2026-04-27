@@ -13,8 +13,16 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const productRoutes = require('./routes/productRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const userAuthRoutes = require('./routes/userAuthRoutes');
+const profileRoutes = require('./routes/profileRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
+
+// Trust proxy - Essential for Render/Heroku/Cloudflare to work with rate limiting
+app.set('trust proxy', 1);
 
 // Create uploads directory if it doesn't exist
 const uploadDir = path.join(__dirname, 'public/uploads');
@@ -54,6 +62,13 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/upload', uploadRoutes);
+
+// User/Customer Routes
+app.use('/api/user/auth', userAuthRoutes);
+app.use('/api/user/profile', profileRoutes);
+app.use('/api/user/cart', cartRoutes);
+app.use('/api/user/wishlist', wishlistRoutes);
+app.use('/api/user/orders', orderRoutes);
 
 // Root route
 app.get('/', (req, res) => {

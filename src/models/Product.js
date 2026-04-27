@@ -40,7 +40,7 @@ const productSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
-    min: [1, 'Rating must be at least 1'],
+    min: [0, 'Rating cannot be less than 0'],
     max: [5, 'Rating cannot be more than 5'],
     default: 0,
   },
