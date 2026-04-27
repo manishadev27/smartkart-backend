@@ -3,6 +3,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
+const fs = require('fs');
 const errorHandler = require('./middlewares/error');
 
 // Route files
@@ -13,21 +15,26 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 
 const app = express();
-const path = require('path');
+
+// Create uploads directory if it doesn't exist
+const uploadDir = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Body parser
 app.use(express.json());
-
-// Static folder
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Enable CORS
 app.use(cors());
 
 // Set security headers
 app.use(helmet({
-  crossOriginResourcePolicy: false,
+  crossOriginResourcePolicy: false, // Essential for serving images locally
 }));
+
+// Static folder
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') {

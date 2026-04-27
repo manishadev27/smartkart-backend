@@ -11,6 +11,12 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
     return res.status(400).json({ success: false, errors: errors.array() });
   }
 
+  // Handle default images if none provided
+  if (!req.body.images || req.body.images.length === 0) {
+    const protocol = req.get('x-forwarded-proto') || req.protocol;
+    req.body.images = [`${protocol}://${req.get('host')}/uploads/default-product.jpg`];
+  }
+
   const product = await Product.create(req.body);
 
   res.status(201).json({
@@ -117,6 +123,12 @@ exports.updateProduct = asyncHandler(async (req, res, next) => {
 
   if (!product) {
     return res.status(404).json({ success: false, message: 'Product not found' });
+  }
+
+  // Handle default images if none provided and images array is being updated
+  if (req.body.images && req.body.images.length === 0) {
+    const protocol = req.get('x-forwarded-proto') || req.protocol;
+    req.body.images = [`${protocol}://${req.get('host')}/uploads/default-product.jpg`];
   }
 
   product = await Product.findByIdAndUpdate(req.params.id, req.body, {

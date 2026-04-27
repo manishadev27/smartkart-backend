@@ -5,6 +5,12 @@ const asyncHandler = require('../utils/asyncHandler');
 // @route   POST /api/categories
 // @access  Private
 exports.createCategory = asyncHandler(async (req, res, next) => {
+  // Handle default image if none provided
+  if (!req.body.image) {
+    const protocol = req.get('x-forwarded-proto') || req.protocol;
+    req.body.image = `${protocol}://${req.get('host')}/uploads/no-photo.jpg`;
+  }
+
   const category = await Category.create(req.body);
 
   res.status(201).json({
@@ -34,6 +40,12 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
 
   if (!category) {
     return res.status(404).json({ success: false, message: 'Category not found' });
+  }
+
+  // Handle default image if none provided
+  if (req.body.image === '') {
+    const protocol = req.get('x-forwarded-proto') || req.protocol;
+    req.body.image = `${protocol}://${req.get('host')}/uploads/no-photo.jpg`;
   }
 
   category = await Category.findByIdAndUpdate(req.params.id, req.body, {
